@@ -59,9 +59,11 @@ const Sidebar = () => {
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
+            <Link href='/profile'>
             <Menu.Item leftSection={<UserIcon className='size-7' />}>
               <h3>Profile</h3>
             </Menu.Item>
+            </Link>
             <Menu.Item leftSection={<Logout className='size-7' />} onClick={() => logOut()}>
               <h3>Logout</h3>
             </Menu.Item>

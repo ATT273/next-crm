@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { getServerSession } from "next-auth";
-import AuthProvider from "@/utils/authProvider";
 import '@mantine/core/styles.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +16,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
   return (
     <html lang="en">
       <head>
@@ -24,11 +24,10 @@ export default async function RootLayout({
       <body
         className='antialiased'
       >
-        {/* <AuthProvider session={session}> */}
         <MantineProvider>
+          <Notifications />
           {children}
         </MantineProvider>
-        {/* </AuthProvider> */}
       </body>
     </html>
   );

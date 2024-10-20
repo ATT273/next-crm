@@ -4,6 +4,7 @@ import { getSession } from '@/app/actions'
 const Dashboard = async () => {
   const session = await getSession()
   if (!session) {
+
     redirect('/authenticate')
   }
 
