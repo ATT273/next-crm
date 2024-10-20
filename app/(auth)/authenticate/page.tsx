@@ -1,33 +1,10 @@
 'use client'
 
-import { z } from "zod"
-import { useRouter } from 'next/navigation';
 import LogInForm from './component/login-form';
 import SignUpForm from './component/signup-form';
 import { Tabs } from '@mantine/core'
-type Inputs = {
-  example: string
-  exampleRequired: string
-}
 
-export type FormData = {
-  email: string;
-  password: string;
-};
 
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Invalid email address",
-  }),
-  password: z.string().min(6, {
-    message: "password must be at least 6 characters",
-  }),
-})
-
-const initalForm = {
-  email: "",
-  password: "",
-}
 const Login = () => {
   return (
     <div className='h-full w-full'>

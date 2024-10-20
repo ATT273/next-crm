@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
-// import { useForm, Controller } from "react-hook-form"
-import { Input } from "@nextui-org/input"
 import { Button } from "@nextui-org/button";
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { z } from "zod"
 import { useRouter } from 'next/navigation';
-import { signIn } from "next-auth/react"
 import { useForm } from '@mantine/form';
 import { TextInput } from '@mantine/core';
 import { logIn } from '../actions';

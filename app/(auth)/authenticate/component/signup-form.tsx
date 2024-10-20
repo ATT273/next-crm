@@ -1,21 +1,19 @@
 import React, { useState } from 'react'
 // import { useForm, Controller } from "react-hook-form"
-import { Input } from "@nextui-org/input"
 import { Button } from "@nextui-org/button";
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { z } from "zod"
 import { useRouter } from 'next/navigation';
-import { signIn } from "next-auth/react"
 import { useForm } from '@mantine/form';
 import { TextInput } from '@mantine/core';
-import { logIn } from '../actions';
-
+import { signUp } from '../actions';
 type Inputs = {
   example: string
   exampleRequired: string
 }
 
 export type FormData = {
+  name: string;
   email: string;
   password: string;
 };
@@ -26,11 +24,15 @@ const formSchema = z.object({
   password: z.string().min(6, {
     message: "password must be at least 6 characters",
   }),
+  name: z.string().min(6, {
+    message: "name must be at least 6 characters",
+  }),
 })
 
 const initalForm = {
   email: "",
   password: "",
+  name: ""
 }
 
 const SignUpForm = () => {
@@ -39,10 +41,10 @@ const SignUpForm = () => {
 
   const onSignUp = async (values: z.infer<typeof formSchema>) => {
     try {
-      const res = await signIn('credentials', {
-        redirect: false,
+      const res = await signUp({
         email: values.email,
         password: values.password,
+        name: values.name
       })
 
       if (!res?.ok) {
@@ -70,6 +72,14 @@ const SignUpForm = () => {
         onSubmit={form.onSubmit(onSignUp)}
         className='flex flex-col gap-3 p-3 items-center'>
         <h3 className='font-bold text-2xl text-center'>Sign Up</h3>
+        <TextInput
+          withAsterisk
+          label="Name"
+          placeholder="enter your name"
+          classNames={{ root: 'w-full' }}
+          key={form.key('name')}
+          {...form.getInputProps('name')}
+        />
         <TextInput
           withAsterisk
           label="Email"
