@@ -106,7 +106,11 @@ const InforForm = () => {
           {...formInfo.getInputProps('dob')}
         />
         <div className='flex justify-end w-full'>
-          <Button type="submit" color='gray' variant='light' classNames={{
+          <Button
+            type="submit"
+            color='gray'
+            variant='light'
+            classNames={{
             root: 'w-[3rem]'
           }}>
             Save

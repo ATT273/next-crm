@@ -1,3 +1,5 @@
+
+
 export const getLocalUser = () => {
   if (typeof window === 'undefined') return null
   const user = localStorage.getItem('user')
@@ -6,3 +8,4 @@ export const getLocalUser = () => {
   }
   return null
 }
+

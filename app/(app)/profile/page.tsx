@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation';
 const Profile = async () => {
   const session = await getSession()
   if (!session) {
-
     redirect('/authenticate')
   }
   return (
