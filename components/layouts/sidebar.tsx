@@ -16,9 +16,19 @@ const menus = [
     link: '/dashboard'
   },
   {
+    title: 'Products',
+    icon: 'home',
+    link: '/product'
+  },
+  {
     title: 'Users',
     icon: 'users',
     link: '/user'
+  },
+  {
+    title: 'Roles',
+    icon: 'roles',
+    link: '/role'
   },
   {
     title: 'Settings',
