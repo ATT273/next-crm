@@ -1,9 +1,10 @@
 'use server'
 import { cookies } from 'next/headers'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 export const signUp = async ({ email, password, name }: { email: string, password: string, name: string }) => {
   try {
-    const res = await fetch('http://localhost:5000/api/auth/register', {
+    const res = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name })
@@ -33,7 +34,7 @@ export const signUp = async ({ email, password, name }: { email: string, passwor
 }
 export const logIn = async ({ email, password }: { email: string, password: string }) => {
   try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -43,6 +44,7 @@ export const logIn = async ({ email, password }: { email: string, password: stri
       return ({ message: jsonRes.message, ok: false, status: 400, url: null })
     }
     if (jsonRes.status === 200) {
+      jsonRes.permissions = 3
       const _session = JSON.stringify(jsonRes)
       cookies().set('session', _session, {
         httpOnly: true,

@@ -1,54 +1,47 @@
 'use client'
-import ChevronDown from '@/components/icons/chevron-down';
-import { Button, Table } from '@mantine/core';
-import { useState } from 'react';
-
-const rows = [
-  {
-    key: "1",
-    name: "Super Admin",
-    code: "SADM",
-    status: "Active",
-  },
-  {
-    key: "2",
-    name: "Manager",
-    code: "MNGR",
-    status: "Paused",
-  },
-  {
-    key: "3",
-    name: "Staff",
-    code: "STFF",
-    status: "Active",
-  },
-  {
-    key: "4",
-    name: "Cashier",
-    code: "CSHR",
-    status: "Active",
-  },
-];
+import { Table } from '@mantine/core';
+import RoleTableRow from './table-row';
+import { RoleType } from '@/types/role.type';
 
 const columns = [
   {
     key: "name",
     label: "NAME",
-    class: 'w-[10rem]'
+    class: 'w-[12rem] text-center'
   },
   {
     key: "code",
     label: "CODE",
-    class: 'w-[10rem]'
+    class: 'w-[10rem] text-center'
   },
   {
-    key: "status",
-    label: "STATUS",
-    class: ''
+    key: "active",
+    label: "Active",
+    class: 'w-[10rem] text-center'
   },
+  {
+    key: "description",
+    label: "DESCRIPTION",
+    class: 'grow text-center'
+  },
+  {
+    key: "show",
+    label: "Show",
+    class: 'w-[8rem] text-center'
+  },
+  {
+    key: "actions",
+    label: "Actions",
+    class: 'w-[8rem] text-center'
+  },
+  {
+    key: "delete",
+    label: "Delete",
+    class: 'w-[8rem] text-center'
+  }
 ];
-const RoleTable = () => {
-  const [showMore, setShowMore] = useState(false)
+const RoleTable = ({ roles }: { roles: RoleType[] }) => {
+
   return (
     <>
       <Table
@@ -56,11 +49,11 @@ const RoleTable = () => {
           thead: 'bg-gray-100 font-semibold text-black',
         }}>
         <Table.Thead>
-          <Table.Tr>
+          <Table.Tr className='flex'>
             {
               columns.map((column) => (
                 <Table.Td key={column.key} className={column.class} classNames={{
-                  td: 'bg-red-100',
+                  td: `bg-emerald-100 ${column.class}`,
 
                 }}>
                   {column.label}
@@ -71,46 +64,8 @@ const RoleTable = () => {
         </Table.Thead>
         <Table.Tbody>
           {
-            rows.map((item) => (
-              <Table.Tr key={item.key}>
-                <Table.Td colSpan={3}>
-                  <Table
-                    classNames={{
-                      thead: 'bg-gray-100 font-semibold text-black',
-                    }}>
-                    <Table.Tbody>
-                      <Table.Tr>
-                        <Table.Td className='w-[10rem]'>{item.name}</Table.Td>
-                        <Table.Td className='w-[10rem]'>{item.code}</Table.Td>
-                        <Table.Td className=''>{item.status}</Table.Td>
-                        <Table.Td className='w-[10rem]'>
-                          <Button
-                            variant='transparent'
-                            onClick={() => setShowMore(!showMore)}>
-                            <ChevronDown className='size-6' />
-                          </Button>
-                        </Table.Td>
-                      </Table.Tr>
-                      <Table.Tr >
-
-                        {showMore &&
-                          <Table.Td colSpan={4}>
-                            <div className='h-[300px]'>
-                              <div>Dashboard: access:x, Edit: x</div>
-                              <div>Products: access:x, Edit: x</div>
-                              <div>Users: access:x, Edit: x</div>
-                              <div>Roles: access:x, Edit: x</div>
-                            </div>
-                          </Table.Td>
-                        }
-
-                      </Table.Tr>
-                    </Table.Tbody>
-                  </Table>
-                </Table.Td>
-                {/* <Table.Td>{item.code}</Table.Td>
-                <Table.Td>{item.status}</Table.Td> */}
-              </Table.Tr>
+            roles && roles.length > 0 && roles.map((item) => (
+              <RoleTableRow item={item} key={item.code} />
             ))
           }
         </Table.Tbody>

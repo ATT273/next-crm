@@ -2,21 +2,20 @@
 import { getLocalUser } from "@/utils/session";
 import { cookies } from "next/headers"
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '${API_URL}'
 export const getServerSession = async () => {
   const cookieStore = cookies()
-  const session = cookieStore.get('session')
+  const session = await cookieStore.get('session')
   if (!session) return null
   return session
 }
 
 export const getProducts = async () => {
-  console.log('getProducts')
   // const user = getLocalUser()
   const session = await getServerSession()
   const user = JSON.parse(session!.value)
-  console.log('user', user)
   try {
-    const res = await fetch(`http://localhost:5000/api/products`, {
+    const res = await fetch(`${API_URL}/products`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +40,7 @@ export const getProducts = async () => {
 export const createProduct = async (data: any) => {
   const user = getLocalUser()
   try {
-    const res = await fetch(`http://localhost:5000/api/products`, {
+    const res = await fetch(`${API_URL}/products`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",

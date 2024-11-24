@@ -6,10 +6,9 @@ import {
   Card, FileInput
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
-import { createProduct } from '../actions';
-import InforForm from '../../profile/components/InforForm';
+import { permissionsValue } from '@/constants';
 
 const formInfoSchema = z.object({
   name: z.string().min(6, {
@@ -35,6 +34,11 @@ const NewProduct = () => {
   const [opened, setOpened] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState({
+    access: false,
+    edit: false,
+    delete: false
+  })
   const formInfo = useForm({
     mode: 'controlled',
     initialValues: {
@@ -54,6 +58,19 @@ const NewProduct = () => {
     console.log('values', values)
     // const res = await createProduct(values)
   }
+
+  useEffect(() => {
+    const localUser = localStorage.getItem('user')
+    if (localUser) {
+      const user = JSON.parse(localUser)
+      const _permissions = {
+        access: !!(user.permissions & permissionsValue.ACCESS),
+        edit: !!(user.permissions & permissionsValue.EDIT),
+        delete: !!(user.permissions & permissionsValue.DELETE)
+      }
+      setPermissions(_permissions)
+    }
+  }, [])
   return (
     <div>
       <Drawer
@@ -243,7 +260,11 @@ const NewProduct = () => {
           <Button color='teal' onClick={() => handleSubmit(formInfo.getValues())}>Save</Button>
         </footer>
       </Drawer>
-      <Button onClick={() => setOpened(true)}>Open Drawer</Button>
+      <Button
+        onClick={() => setOpened(true)}
+        disabled={!permissions.delete}>
+        Open Drawer
+      </Button>
     </div >
   )
 }
