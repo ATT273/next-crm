@@ -8,34 +8,8 @@ import { User as UserIcon } from '@/components/icons/user'
 import { Logout } from '@/components/icons/logout'
 import { useEffect, useState } from 'react'
 import { ActionIcon, Menu } from '@mantine/core';
-
-const menus = [
-  {
-    title: 'Dashboard',
-    icon: 'home',
-    link: '/dashboard'
-  },
-  {
-    title: 'Products',
-    icon: 'home',
-    link: '/product'
-  },
-  {
-    title: 'Users',
-    icon: 'users',
-    link: '/user'
-  },
-  {
-    title: 'Roles',
-    icon: 'roles',
-    link: '/role'
-  },
-  {
-    title: 'Settings',
-    icon: 'settings',
-    link: '/setting'
-  }
-]
+import { MENU } from '@/constants'
+const menus = MENU
 
 const Sidebar = () => {
   const [localUser, setLocalUser] = useState(null)
@@ -48,7 +22,7 @@ const Sidebar = () => {
       <ul className='p-2'>
         {
           menus.map((menu) => (
-            <Link href={menu.link} key={menu.title}>
+            <Link href={menu.href} key={menu.title}>
               <li className='p-2 font-semibold rounded-sm hover:bg-slate-200'>{menu.title}</li>
             </Link>
           ))
