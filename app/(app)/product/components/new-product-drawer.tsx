@@ -3,12 +3,23 @@ import {
   Drawer, TagsInput,
   Button, Skeleton,
   TextInput, Select, Textarea,
-  Card, FileInput
+  Card, FileInput,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { permissionsValue } from '@/constants';
+import { mainCategory, subCategory } from '@/constants';
+import { InitialItemType } from './table';
+import { createProduct } from '../actions';
+import { notifications } from '@mantine/notifications';
+
+type SKU = {
+  code: string
+  size: string
+  qty: number
+  price: number
+}
 
 const formInfoSchema = z.object({
   name: z.string().min(6, {
@@ -26,9 +37,9 @@ const formInfoSchema = z.object({
   price: z.number().min(1, { message: "Price is required" }),
   impPrice: z.number().min(1, { message: "Import price is required" }),
   qty: z.number().min(1, { message: "Quantity is required" }),
-  sizes: z.array(z.string()),
+  sizes: z.array(z.string()).optional(),
+  description: z.string().optional(),
 })
-
 
 const NewProduct = () => {
   const [opened, setOpened] = useState(false);
@@ -39,6 +50,7 @@ const NewProduct = () => {
     edit: false,
     delete: false
   })
+  const [skuItems, setSKUItems] = useState<SKU[]>([])
   const formInfo = useForm({
     mode: 'controlled',
     initialValues: {
@@ -50,13 +62,37 @@ const NewProduct = () => {
       impPrice: 0,
       qty: 0,
       sizes: [],
+      description: '',
     },
     validate: zodResolver(formInfoSchema),
   });
 
   const handleSubmit = async (values: z.infer<typeof formInfoSchema>) => {
-    console.log('values', values)
-    // const res = await createProduct(values)
+    const data = {
+      ...values,
+      main_category: parseInt(values.mainCategory),
+      sub_category: parseInt(values.subCategory),
+      imp_price: values.impPrice,
+      description: values.description ?? "",
+      sizes: values.sizes ?? []
+    }
+    const result = await createProduct(data)
+    if (result.status === 200) {
+      setOpened(false)
+      notifications.show({
+        title: 'Success',
+        message: 'Product created successfully',
+        color: 'green',
+        position: 'top-right',
+      })
+    } else {
+      notifications.show({
+        title: 'Fail',
+        message: `Failed to create product: ${result.message}`,
+        color: 'red',
+        position: 'top-right',
+      })
+    }
   }
 
   useEffect(() => {
@@ -71,6 +107,37 @@ const NewProduct = () => {
       setPermissions(_permissions)
     }
   }, [])
+
+  useEffect(() => {
+    if (sizes.length > 0) {
+      const formValues = formInfo.getValues()
+      const mainCode = mainCategory.find((item) => item.value === formValues.mainCategory)
+      const subCode = subCategory.find((item) => item.value === formValues.subCategory)
+      const _skuItems = sizes.map((size) => {
+        const code = `${mainCode?.code}.${subCode?.code}.${size}`
+        return {
+          code,
+          size,
+          qty: 0,
+          price: formValues.price
+        }
+      })
+      setSKUItems(_skuItems)
+    }
+  }, [sizes])
+
+  const handleChangeSizes = (values: string[]) => {
+    setSizes(values)
+    formInfo.setValues({ ...formInfo.getValues(), sizes: values })
+  }
+  const handleChangePrice = (value: string, index: number) => {
+    const _skuItems = skuItems.map((item, i) => i === index ? { ...item, price: Number(value) } : item)
+    setSKUItems(_skuItems)
+  }
+  const handleChangeQty = (value: string, index: number) => {
+    const _skuItems = skuItems.map((item, i) => i === index ? { ...item, qty: Number(value) } : item)
+    setSKUItems(_skuItems)
+  }
   return (
     <div>
       <Drawer
@@ -93,7 +160,7 @@ const NewProduct = () => {
             classNames={{
               root: 'w-full p-2'
             }}>
-            <h3 className='text-lg font-semibold mb-3'>Basic Information - SKU: N-POLO1</h3>
+            <h3 className='text-lg font-semibold mb-3'>Basic Information</h3>
             <TextInput
               withAsterisk
               label="Product name"
@@ -105,17 +172,17 @@ const NewProduct = () => {
             />
             <div className='flex gap-2 w-full'>
               <Select
-                label="Main Category"
+                label="Sub Category"
                 placeholder="Select main category"
-                data={['', 'Nam', 'Nữ', 'Bé trai', 'Bé gái']}
+                data={mainCategory}
                 key={formInfo.key('mainCategory')}
                 {...formInfo.getInputProps('mainCategory')}
                 classNames={{ root: 'grow' }}
               />
               <Select
-                label="Sub Category"
+                label="Main Category"
                 placeholder="Select sub category"
-                data={['Quần dài', 'Quần đùi', 'Áo', 'Váy']}
+                data={subCategory}
                 key={formInfo.key('subCategory')}
                 {...formInfo.getInputProps('subCategory')}
                 classNames={{ root: 'grow' }}
@@ -137,7 +204,6 @@ const NewProduct = () => {
               key={formInfo.key('description')}
               {...formInfo.getInputProps('description')}
             />
-
           </Card>
           <Card
             shadow="sm"
@@ -191,32 +257,38 @@ const NewProduct = () => {
             <TagsInput
               label="Sizes"
               data={[]} value={sizes}
-              onChange={setSizes} />
+              onChange={(e) => handleChangeSizes(e)} />
             {
               sizes.length > 0 &&
               <div className='flex flex-col gap-2 mt-2'>
                 {
-                  sizes.map((size, index) => (
+                    skuItems.map((item, index) => (
                     <div key={index}>
-                      <p className='font-semibold'>N-POLO1-{size}01</p>
+                        <p className='font-semibold'>SKU:{item.code}</p>
                       <div className='flex gap-2 items-center justify-start w-full'>
-                        <p className='font-semibold min-w-[4rem]'>Size: {size}</p>
+                          <div>
+                            <p className='text-white'>.</p>
+                            <p className='font-semibold min-w-[4rem]'>Size: {item.size}</p>
+                          </div>
                         <TextInput
                           withAsterisk
+                            label="Price"
                           type='text'
                           placeholder="Enter price"
                           classNames={{ root: 'grow' }}
                           key={formInfo.key('attPrice')}
                           {...formInfo.getInputProps('attPrice')}
-                        />
-                        <p className='font-semibold min-w-[3rem]'>Qty: </p>
+                            onChange={(e) => handleChangePrice(e.target.value, index)}
+                          />
                         <TextInput
                           withAsterisk
+                            label="Quantity"
                           type='text'
                           placeholder="Enter quantity"
                           classNames={{ root: 'grow' }}
                           key={formInfo.key('attQty')}
                           {...formInfo.getInputProps('attQty')}
+                            onChange={(e) => handleChangeQty(e.target.value, index)}
                         />
                       </div>
                     </div>
@@ -262,8 +334,8 @@ const NewProduct = () => {
       </Drawer>
       <Button
         onClick={() => setOpened(true)}
-        disabled={!permissions.delete}>
-        Open Drawer
+        disabled={!permissions.edit}>
+        Add new product
       </Button>
     </div >
   )
