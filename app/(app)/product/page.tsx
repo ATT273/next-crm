@@ -21,9 +21,11 @@ const Product = async () => {
   const res = await getProducts()
   return (
     <div className='p-3 relative'>
+      <div className='flex justify-between items-center mb-3'>
       <h1 className='font-bold text-2xl mb-3'>Products list</h1>
+        <NewProduct />
+      </div>
       <ProductTable products={res.data} />
-      <NewProduct />
     </div>
   )
 }

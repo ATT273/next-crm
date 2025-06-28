@@ -20,13 +20,10 @@ export const authOptions: any = {
             body: JSON.stringify(credentials)
           })
           const jsonRes = await res.json()
-          console.log('user', jsonRes)
           if (jsonRes.status === 400) {
-            console.log('error')
             throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
           }
           if (jsonRes.status === 200) {
-            console.log('success')
             return jsonRes
           }
           return null
@@ -42,8 +39,6 @@ export const authOptions: any = {
   ],
   callbacks: {
     async session({ session, user }: { session: any, user: any }) {
-      console.log('session u', user)
-      console.log('session s', session)
       if (user && user.accessToken) {
         session.user.accessToken = user.accessToken
       }
