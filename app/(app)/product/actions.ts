@@ -1,10 +1,5 @@
 "use server";
-import {
-  CreateProductType,
-  IProductSku,
-  ProductType,
-} from "@/types/product.type";
-import { getLocalUser } from "@/utils/session";
+import { IProductForm, IProductSku } from "@/types/product.type";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
@@ -43,13 +38,49 @@ export const getProducts = async () => {
     }
   } catch (error) {
     if (error instanceof Error) {
+      console.log("error", error.message);
+      // throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+};
+
+export const getProductDetails = async (id: string) => {
+  const session = await getServerSession();
+  const user = JSON.parse(session!.value);
+  try {
+    const res = await fetch(`${API_URL}/products/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    });
+    const jsonRes = await res.json();
+    if (jsonRes.status === 400) {
+      throw Error(
+        JSON.stringify({
+          message: jsonRes.message,
+          ok: false,
+          status: 400,
+          url: null,
+        })
+      );
+    }
+    if (jsonRes.status === 200) {
+      return jsonRes;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
       throw new Error(error.message);
     } else {
       throw new Error("An unknown error occurred");
     }
   }
 };
-export const createProduct = async (data: CreateProductType) => {
+
+export const createProduct = async (data: IProductForm) => {
   const session = await getServerSession();
   const user = JSON.parse(session!.value);
 
@@ -79,11 +110,11 @@ export const createProduct = async (data: CreateProductType) => {
   }
 };
 
-export const updateProduct = async (data: ProductType) => {
+export const updateProduct = async (id: string, data: IProductForm) => {
   const session = await getServerSession();
   const user = JSON.parse(session!.value);
   try {
-    const res = await fetch(`${API_URL}/products/${data._id}`, {
+    const res = await fetch(`${API_URL}/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -136,7 +167,7 @@ export const createProductSku = async (id: string, data: IProductSku[]) => {
 
   try {
     const res = await fetch(`${API_URL}/products/${id}/product-sku`, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.accessToken}`,
@@ -144,6 +175,7 @@ export const createProductSku = async (id: string, data: IProductSku[]) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
+    console.log("jsonRes  sku", jsonRes);
     // if (jsonRes.status === 400) {
     //   throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
     // }
@@ -159,3 +191,34 @@ export const createProductSku = async (id: string, data: IProductSku[]) => {
     }
   }
 };
+
+export const updateProductSku = async (id: string, data: IProductSku[]) => {
+  const session = await getServerSession();
+  const user = JSON.parse(session!.value);
+
+  try {
+    const res = await fetch(`${API_URL}/products/${id}/product-sku`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const jsonRes = await res.json();
+    console.log("jsonRes  sku", jsonRes);
+    // if (jsonRes.status === 400) {
+    //   throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
+    // }
+    if (jsonRes.status === 200) {
+      revalidatePath("/(app)/product", "page");
+    }
+    return jsonRes;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
+  }
+}

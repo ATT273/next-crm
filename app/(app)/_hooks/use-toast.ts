@@ -1,4 +1,4 @@
-import { notifications } from "@mantine/notifications";
+import { addToast } from "@heroui/toast";
 
 interface Props {
   title: string;
@@ -13,20 +13,18 @@ interface Props {
 }
 function useToast() {
   const toast = {
-    success: ({ title, message, position }: Props) => {
-      notifications.show({
+    success: ({ title, message }: Props) => {
+      addToast({
         title,
-        message,
-        color: "green",
-        position: position ?? "top-center",
+        description: message,
+        color: "success",
       });
     },
-    error: ({ title, message, position }: Props) => {
-      notifications.show({
+    error: ({ title, message }: Props) => {
+      addToast({
         title,
-        message,
-        color: "red",
-        position: position ?? "top-center",
+        description: message,
+        color: "danger",
       });
     },
   };

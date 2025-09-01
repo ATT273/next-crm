@@ -1,6 +1,12 @@
-'use client'
-import React, { use, useEffect } from 'react'
-import { Table } from '@mantine/core';
+"use client";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
 const rows = [
   {
     key: "1",
@@ -46,36 +52,27 @@ const columns = [
 const DashboardTable = () => {
   return (
     <>
-      <Table
-        classNames={{
-          thead: 'bg-gray-100 font-semibold text-black',
-        }}>
-        <Table.Thead>
-          <Table.Tr>
-            {
-              columns.map((column) => (
-                <Table.Td key={column.key}>{column.label}</Table.Td>
-              ))
-            }
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {
-            rows.map((item) => (
-              <Table.Tr key={item.key}>
-                <Table.Td>{item.name}</Table.Td>
-                <Table.Td>{item.sales}</Table.Td>
-                <Table.Td>{item.income}</Table.Td>
-              </Table.Tr>
-            ))
-          }
-        </Table.Tbody>
-      </Table >
+      <Table>
+        <TableHeader>
+          {columns.map((column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {rows.map((item) => (
+            <TableRow key={item.key}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>{item.sales}</TableCell>
+              <TableCell>{item.income}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       {/* <Pagination
         total={10}
         initialPage={1} /> */}
     </>
-  )
-}
+  );
+};
 
-export default DashboardTable
+export default DashboardTable;

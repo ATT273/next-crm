@@ -3,24 +3,25 @@ export type ProductType = {
   name: string;
   description: string;
   price: number;
-  main_category: number;
-  sub_category: number;
+  mainCategory: number;
+  subCategory: number;
   unit: string;
   qty: number;
   sizes: string[];
-  imp_price: number;
+  importPrice: number;
+  skus: IProductSku[];
 };
 
 export type CreateProductType = {
   name: string;
   description: string;
   price: number;
-  main_category: number;
-  sub_category: number;
+  mainCategory: number;
+  subCategory: number;
   unit: string;
   qty: number;
   sizes: string[];
-  imp_price: number;
+  importPrice: number;
 };
 
 export interface IProductSku {
@@ -28,8 +29,17 @@ export interface IProductSku {
   size: string;
   qty: number;
   price: number;
-  properties: {
-    size: string;
-    color: string;
-  };
+}
+
+export interface IProductForm {
+  name: string;
+  mainCategory: string;
+  subCategory: string;
+  unit: string;
+  price: number;
+  importPrice: number;
+  qty: number;
+  sizes?: string[];
+  tags?: string[];
+  description?: string;
 }

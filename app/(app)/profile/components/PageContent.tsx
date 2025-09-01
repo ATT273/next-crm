@@ -1,31 +1,31 @@
-'use client'
-import { Divider, Accordion } from '@mantine/core';
-import { Lock } from '@/components/icons/lock';
-import PasswordForm from './PasswordForm';
-import InforForm from './InforForm'
+"use client";
+import { Accordion, AccordionItem, Divider } from "@heroui/react";
+import { Lock } from "@/components/icons/lock";
+import PasswordForm from "./PasswordForm";
+import InforForm from "./InforForm";
 const PageContent = () => {
   return (
     <div>
-      <title>Profile</title>
-      <div className='h-dvh p-3 w-1/3'>
-        <h1 className='font-bold text-3xl mb-3'>Profile</h1>
+      <title>Profile | CRM</title>
+      <div className="h-dvh p-3 w-1/3">
+        <h1 className="font-bold text-3xl mb-3">Profile</h1>
         <div>
           <InforForm />
-          <Divider my="md" />
+          <Divider />
           <Accordion defaultValue="">
-            <Accordion.Item value={'password'}>
-              <Accordion.Control icon={<Lock className='size-6' />}>
-                Change Password
-              </Accordion.Control>
-              <Accordion.Panel>
-                <PasswordForm />
-              </Accordion.Panel>
-            </Accordion.Item>
+            <AccordionItem
+              key="password"
+              aria-label="Password"
+              startContent={<Lock className="size-6" />}
+              title="Change Password"
+            >
+              <PasswordForm />
+            </AccordionItem>
           </Accordion>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PageContent
+export default PageContent;

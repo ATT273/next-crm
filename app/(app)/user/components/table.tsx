@@ -1,5 +1,12 @@
-'use client'
-import { Table } from '@mantine/core';
+"use client";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
 
 const rows = [
   {
@@ -47,34 +54,31 @@ const UserTable = () => {
     <>
       <Table
         classNames={{
-          thead: 'bg-gray-100 font-semibold text-black',
-        }}>
-        <Table.Thead>
-          <Table.Tr>
-            {
-              columns.map((column) => (
-                <Table.Td key={column.key}>{column.label}</Table.Td>
-              ))
-            }
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {
-            rows.map((item) => (
-              <Table.Tr key={item.key}>
-                <Table.Td>{item.name}</Table.Td>
-                <Table.Td>{item.role}</Table.Td>
-                <Table.Td>{item.status}</Table.Td>
-              </Table.Tr>
-            ))
-          }
-        </Table.Tbody>
-      </Table >
+          thead: "bg-gray-100 font-semibold text-black",
+        }}
+      >
+        <TableHeader>
+          <TableColumn>
+            {columns.map((column) => (
+              <div key={column.key}>{column.label}</div>
+            ))}
+          </TableColumn>
+        </TableHeader>
+        <TableBody>
+          {rows.map((item) => (
+            <TableRow key={item.key}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>{item.role}</TableCell>
+              <TableCell>{item.status}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       {/* <Pagination
         total={10}
         initialPage={1} /> */}
     </>
-  )
-}
+  );
+};
 
-export default UserTable
+export default UserTable;

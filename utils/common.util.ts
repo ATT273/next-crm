@@ -4,7 +4,6 @@ export function formatCurrency(
   locale = "en-US"
 ) {
   return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
+    style: "decimal",
   }).format(amount);
 }

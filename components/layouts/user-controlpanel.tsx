@@ -1,17 +1,12 @@
-'use client'
-import { Avatar } from '@mantine/core';
+"use client";
+import { User } from "@heroui/user";
 
 const UserControlPanel = ({ user }: { user: any }) => {
-
   return (
-    <div className='flex gap-1'>
-      <Avatar radius="xl" />
-      <div>
-        <h3 className='font-semibold'>{user && user.name}</h3>
-        <p className='text-sm italic text-gray-400'>{user && user.email}</p>
-      </div>
+    <div className="flex gap-1">
+      <User name={user && user.name} description={user && user.email} />
     </div>
-  )
-}
+  );
+};
 
-export default UserControlPanel
+export default UserControlPanel;

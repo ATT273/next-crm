@@ -1,16 +1,32 @@
 "use client";
-import React from "react";
-import { Button, Table, Popover, UnstyledButton, Modal } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { ProductType } from "@/types/product.type";
 import EditIcon from "@/components/icons/edit";
 import Trash from "@/components/icons/trash";
-import EditableRow from "./editable-row";
 import ThreeDots from "@/components/icons/three-dot";
 import { mainCategory, subCategory } from "@/constants";
-import { deleteProduct } from "../actions";
-import { notifications } from "@mantine/notifications";
+import { deleteProduct, getProductDetails } from "../actions";
 import { formatCurrency } from "@/utils/common.util";
 import useToast from "../../_hooks/use-toast";
+import { useProductStore } from "../_store/product-store";
+import EditProduct from "./drawer/product-detail-drawer";
+import { Button } from "@heroui/button";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 
 const columns = [
   {
@@ -52,20 +68,27 @@ const initialItem = {
   name: "",
   price: 0,
   qty: 0,
-  main_category: 0,
-  sub_category: 0,
+  mainCategory: 0,
+  subCategory: 0,
   unit: "",
   description: "",
-  imp_price: 0,
+  importPrice: 0,
   sizes: [],
 };
 export type InitialItemType = typeof initialItem;
 const ProductTable = ({ products }: { products: ProductType[] }) => {
-  const [deletedProduct, setDeletedProduct] = React.useState<string>("");
-  const [openDeleteConfirm, setOpenDeleteConfirm] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] =
-    React.useState<ProductType>(initialItem);
+  const [open, setOpen] = useState(false);
+  const [deletedProduct, setDeletedProduct] = useState<string>("");
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { toast } = useToast();
+  const { setSelectedId, setProductDetails, selectedProductId } =
+    useProductStore();
+
+  const getDetails = async () => {
+    const result = await getProductDetails(selectedProductId);
+    if (result.data) setProductDetails(result.data);
+  };
+
   const handleDeleteProduct = async (id: string) => {
     const result = await deleteProduct(id);
     if (result.status === 200) {
@@ -81,118 +104,136 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (selectedProductId) {
+      getDetails();
+    } else {
+      setProductDetails({} as ProductType);
+    }
+  }, [selectedProductId]);
+
   return (
     <>
-      <Table
-        classNames={{
-          thead: "bg-gray-100 font-semibold text-black",
-        }}
-      >
-        <Table.Thead>
-          <Table.Tr>
-            {columns.map((column) => (
-              <Table.Td key={column.key}>{column.label}</Table.Td>
-            ))}
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {products &&
+      <Table aria-label="Product list">
+        <TableHeader>
+          {columns.map((column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {products && products.length > 0 ? (
             products.map((item) => (
-              <Table.Tr key={item._id}>
-                {!(item._id === selectedProduct?._id) ? (
-                  <>
-                    <Table.Td>{item.name}</Table.Td>
-                    <Table.Td>{formatCurrency(item.price)}</Table.Td>
-                    <Table.Td>{item.qty}</Table.Td>
-                    <Table.Td>
-                      {
-                        mainCategory.find(
-                          (c) => c.value === item.main_category.toString()
-                        )?.label
-                      }
-                    </Table.Td>
-                    <Table.Td>
-                      {
-                        subCategory.find(
-                          (sc) => sc.value === item.sub_category.toString()
-                        )?.label
-                      }
-                    </Table.Td>
-                    <Table.Td>{item.unit}</Table.Td>
-                    <Table.Td>{item.description}</Table.Td>
-                    <Table.Td>
-                      <Popover width={150} position="bottom" shadow="md">
-                        <Popover.Target>
-                          <Button variant="transparent">
-                            <ThreeDots className="text-slate-900 size-4" />
-                          </Button>
-                        </Popover.Target>
-                        <Popover.Dropdown className="rounded-md">
-                          <ul>
-                            <li>
-                              <Button
-                                onClick={() => setSelectedProduct(item)}
-                                variant="transparent"
-                              >
+              <TableRow key={item._id}>
+                <TableCell>
+                  {item.name} - {item._id}
+                </TableCell>
+                <TableCell>{formatCurrency(item.price)}</TableCell>
+                <TableCell>{item.qty}</TableCell>
+                <TableCell>
+                  {
+                    mainCategory.find(
+                      (c) => c.value === item.mainCategory.toString()
+                    )?.label
+                  }
+                </TableCell>
+                <TableCell>
+                  {
+                    subCategory.find(
+                      (sc) => sc.value === item.subCategory.toString()
+                    )?.label
+                  }
+                </TableCell>
+                <TableCell>{item.unit}</TableCell>
+                <TableCell>{item.description}</TableCell>
+                <TableCell>
+                  {!open && (
+                    <Popover key={"context-menu"} placement="bottom">
+                      <PopoverTrigger>
+                        <Button isIconOnly variant="light">
+                          <ThreeDots className="text-slate-900 size-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="rounded-md p-0 overflow-x-hidden">
+                        <ul>
+                          <li>
+                            <Button
+                              variant="light"
+                              className="w-full rounded-none"
+                              onPress={() => {
+                                setOpen(true);
+                                setSelectedId(item._id);
+                              }}
+                              startContent={
                                 <EditIcon className="text-teal-500 size-4" />
-                                <p className="text-slate-900 ml-2">Edit</p>
-                              </Button>
-                            </li>
-                            <li>
-                              <Button
-                                onClick={() => {
-                                  setOpenDeleteConfirm(true);
-                                  setDeletedProduct(item._id);
-                                }}
-                                variant="transparent"
-                              >
-                                <Trash className="text-red-500 size-4" />{" "}
-                                <p className="text-slate-900 ml-2">Delete</p>
-                              </Button>
-                            </li>
-                          </ul>
-                        </Popover.Dropdown>
-                      </Popover>
-                    </Table.Td>
-                  </>
-                ) : (
-                  <EditableRow
-                    key={item._id}
-                    item={item}
-                    changeEditMode={() => setSelectedProduct(initialItem)}
-                  />
-                )}
-              </Table.Tr>
-            ))}
-        </Table.Tbody>
+                              }
+                            >
+                              <p className="text-slate-900 ml-2">Edit</p>
+                            </Button>
+                          </li>
+                          <li>
+                            <Button
+                              variant="light"
+                              className="w-full rounded-none"
+                              onPress={() => {
+                                setOpenDeleteConfirm(true);
+                                setDeletedProduct(item._id);
+                              }}
+                              startContent={
+                                <Trash className="text-red-500 size-4" />
+                              }
+                            >
+                              <p className="text-slate-900 ml-2">Delete</p>
+                            </Button>
+                          </li>
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center">
+                No products found
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
       </Table>
-      <Modal
-        opened={openDeleteConfirm}
-        onClose={() => setOpenDeleteConfirm(false)}
-        title="Confirm delete"
-        centered
-      >
-        <p className="text-slate-900 mb-2">
-          {" "}
-          Are you sure you want to delete this product?
-        </p>
-        <div className="flex gap-2 w-full justify-end">
-          <Button
-            onClick={() => setOpenDeleteConfirm(false)}
-            variant="default"
-            className="grid place-items-center size-8 p-0 text-slate-900"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => handleDeleteProduct(deletedProduct)}
-            variant="filled"
-            color="red"
-            className="grid place-items-center size-8 text-white"
-          >
-            Delete
-          </Button>
-        </div>
+      <EditProduct open={open} setOpen={setOpen} />
+      <Modal isOpen={openDeleteConfirm} onOpenChange={setOpenDeleteConfirm}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                "Confirm delete"
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-slate-900 mb-2">
+                  Are you sure you want to delete this product?
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <div className="flex gap-2 w-full justify-end">
+                  <Button
+                    onPress={() => setOpenDeleteConfirm(false)}
+                    className="grid place-items-center size-8 p-0 text-slate-900"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onPress={() => handleDeleteProduct(deletedProduct)}
+                    className="grid place-items-center size-8 text-white"
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
       </Modal>
       {/* <Pagination
         total={10}

@@ -16,21 +16,22 @@ const EditableRow = ({
 }) => {
   const [selectedProduct, setSelectedProduct] = React.useState(item);
   const { toast } = useToast();
-  const handleSubmit = async () => {
-    const result = await updateProduct(selectedProduct);
-    if (result.status === 200) {
-      toast.success({
-        title: "Success",
-        message: "Product updated successfully",
-      });
-      changeEditMode();
-    } else {
-      toast.error({
-        title: "Fail",
-        message: `Failed to update product: ${result.message}`,
-      });
-    }
-  };
+
+  // const handleSubmit = async () => {
+  //   const result = await updateProduct(selectedProduct);
+  //   if (result.status === 200) {
+  //     toast.success({
+  //       title: "Success",
+  //       message: "Product updated successfully",
+  //     });
+  //     changeEditMode();
+  //   } else {
+  //     toast.error({
+  //       title: "Fail",
+  //       message: `Failed to update product: ${result.message}`,
+  //     });
+  //   }
+  // };
 
   useEffect(() => {
     if (item) {
@@ -135,7 +136,7 @@ const EditableRow = ({
       <Table.Td>
         <div className="flex gap-2">
           <UnstyledButton
-            onClick={() => handleSubmit()}
+            // onClick={() => handleSubmit()}
             variant="transparent"
             className="grid place-items-center size-8 p-0"
           >

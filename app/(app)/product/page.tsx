@@ -1,6 +1,6 @@
 import React from "react";
 import ProductTable from "./_components/table";
-import NewProduct from "./_components/new-product-drawer";
+import NewProduct from "./_components/drawer/new-product-drawer";
 import { getProducts } from "@/app/(app)/product/actions";
 import { getSession } from "@/app/actions";
 import { redirect } from "next/navigation";
