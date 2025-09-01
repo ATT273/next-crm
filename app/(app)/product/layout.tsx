@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Sidebar from "@/components/layouts/sidebar";
 
 export const metadata: Metadata = {
-  title: "CRM NextJS",
+  title: "Product | CRM",
   description: "Product of ATT273",
 };
 
@@ -11,10 +10,5 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="antialiased pl-[15rem]">
-      <Sidebar />
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }

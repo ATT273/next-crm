@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
-import { Button } from "@nextui-org/button";
-import { zodResolver } from 'mantine-form-zod-resolver';
-import { z } from "zod"
-import { useRouter } from 'next/navigation';
-import { useForm } from '@mantine/form';
-import { TextInput } from '@mantine/core';
-import { logIn } from '../actions';
+import React, { useState } from "react";
+import { Button } from "@heroui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { logIn } from "../actions";
+import { useForm, Controller } from "react-hook-form";
+import { Input } from "@heroui/input";
 
 type Inputs = {
-  example: string
-  exampleRequired: string
-}
+  example: string;
+  exampleRequired: string;
+};
 
 export type FormData = {
   email: string;
@@ -24,62 +24,75 @@ const formSchema = z.object({
   password: z.string().min(6, {
     message: "password must be at least 6 characters",
   }),
-})
+});
 
 const initalForm = {
   email: "",
   password: "",
-}
+};
 
 const LogInForm = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [error, setError] = useState("");
   const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: initalForm,
-    validate: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
+    defaultValues: initalForm,
+    mode: "onSubmit",
   });
 
   const onlogIn = async (values: z.infer<typeof formSchema>) => {
-    const response = await logIn(values)
+    const response = await logIn(values);
     if (response.status === 400) {
-      setError(response.message)
+      setError(response.message);
     }
     if (response.status === 200) {
-      localStorage.setItem('user', JSON.stringify(response))
+      localStorage.setItem("user", JSON.stringify(response));
       router.replace("/dashboard");
     }
-  }
+  };
 
   return (
     <div>
       <form
-        key='logInForm'
-        onSubmit={form.onSubmit(onlogIn)}
-        className='flex flex-col gap-3 p-3 items-center'>
-        <h3 className='font-bold text-2xl text-center'>Log In</h3>
-        <TextInput
-          withAsterisk
-          label="Email"
-          placeholder="your@email.com"
-          classNames={{ root: 'w-full' }}
-          key={form.key('email')}
-          {...form.getInputProps('email')}
+        key="logInForm"
+        onSubmit={form.handleSubmit(onlogIn)}
+        className="flex flex-col gap-3 p-3 items-center"
+      >
+        <h3 className="font-bold text-2xl text-center">Log In</h3>
+        <Controller
+          name="email"
+          control={form.control}
+          render={({ field }) => (
+            <Input
+              isRequired
+              label="Email"
+              placeholder="your@email.com"
+              className="w-full"
+              {...field}
+            />
+          )}
         />
-        <TextInput
-          withAsterisk
-          label="Password"
-          type='password'
-          placeholder="Enter your password"
-          classNames={{ root: 'w-full' }}
-          key={form.key('password')}
-          {...form.getInputProps('password')}
+        <Controller
+          name="password"
+          control={form.control}
+          render={({ field }) => (
+            <Input
+              isRequired
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              className="w-full"
+              {...field}
+            />
+          )}
         />
-        <p className='text-red-500'>{error}</p>
-        <Button type="submit" className='bg-slate-800 text-white w-full'>Login</Button>
+        <p className="text-red-500">{error}</p>
+        <Button type="submit" className="bg-slate-800 text-white w-full">
+          Login
+        </Button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default LogInForm
+export default LogInForm;
