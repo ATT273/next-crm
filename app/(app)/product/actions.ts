@@ -175,7 +175,6 @@ export const createProductSku = async (id: string, data: IProductSku[]) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
-    console.log("jsonRes  sku", jsonRes);
     // if (jsonRes.status === 400) {
     //   throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
     // }
@@ -206,7 +205,6 @@ export const updateProductSku = async (id: string, data: IProductSku[]) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
-    console.log("jsonRes  sku", jsonRes);
     // if (jsonRes.status === 400) {
     //   throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
     // }
@@ -221,4 +219,4 @@ export const updateProductSku = async (id: string, data: IProductSku[]) => {
       throw new Error("An unknown error occurred");
     }
   }
-}
+};
