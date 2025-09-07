@@ -1,50 +1,51 @@
-'use server'
+"use server";
 
 import { getSession } from "@/app/actions";
 // import { getLocalUser } from "@/utils/session";
 import { revalidatePath } from "next/cache";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '${API_URL}'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "${API_URL}";
 export const createRole = async (data: any) => {
-  const user = await getSession()
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/roles`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${user.accessToken}`
+        Authorization: `Bearer ${user.accessToken}`,
       },
       body: JSON.stringify(data),
-
     });
-    const jsonRes = await res.json()
+    const jsonRes = await res.json();
     if (jsonRes.status === 400) {
-      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
+      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }));
     }
     if (jsonRes.status === 200) {
-      return jsonRes
+      revalidatePath("/role", "page");
+      return jsonRes;
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
+};
 
 export const getRoleList = async () => {
-  const user = await getSession()
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/roles`, {
-      method: 'GET',
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${user.accessToken}`
+        Authorization: `Bearer ${user.accessToken}`,
       },
     });
-    const jsonRes = await res.json()
+    const jsonRes = await res.json();
     if (jsonRes.status === 400) {
-      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
+      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }));
     }
     if (jsonRes.status === 200) {
       const roles = jsonRes.data.map((item: any) => ({
@@ -53,60 +54,60 @@ export const getRoleList = async () => {
         name: item.name,
         description: item.description,
         active: item.active,
-        permissions: JSON.parse(item.permissions)
-      }))
-      return roles
+        permissions: JSON.parse(item.permissions),
+      }));
+      return roles;
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
+};
 
 export const updateRole = async (data: any) => {
-  const user = await getSession()
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/roles/${data.id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${user.accessToken}`
+        Authorization: `Bearer ${user.accessToken}`,
       },
       body: JSON.stringify(data),
     });
-    const jsonRes = await res.json()
-    revalidatePath('/role')
-    return jsonRes
+    const jsonRes = await res.json();
+    revalidatePath("/role", "page");
+    return jsonRes;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
+};
 
 export const deleteRole = async (id: string) => {
-  const user = await getSession()
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/roles/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${user.accessToken}`
+        Authorization: `Bearer ${user.accessToken}`,
       },
     });
-    const jsonRes = await res.json()
-    revalidatePath('/role')
-    return jsonRes
+    const jsonRes = await res.json();
+    revalidatePath("/role");
+    return jsonRes;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
+};
