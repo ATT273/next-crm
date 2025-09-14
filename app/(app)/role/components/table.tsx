@@ -1,80 +1,66 @@
-'use client'
-import { Table } from '@mantine/core';
-import RoleTableRow from './table-row';
-import { RoleType } from '@/types/role.type';
+"use client";
+// import { Table } from '@mantine/core';
+import RoleTableRow from "./table-row";
+import { RoleType } from "@/types/role.type";
+import { Table, TableHeader, TableBody, TableColumn } from "@heroui/table";
 
 const columns = [
   {
     key: "name",
     label: "NAME",
-    class: 'w-[12rem] text-center'
+    class: "w-[12rem] text-left",
   },
   {
     key: "code",
     label: "CODE",
-    class: 'w-[10rem] text-center'
+    class: "w-[10rem] text-left",
   },
   {
     key: "active",
     label: "Active",
-    class: 'w-[10rem] text-center'
+    class: "w-[10rem] text-left",
   },
   {
     key: "description",
     label: "DESCRIPTION",
-    class: 'grow text-center'
+    class: "grow text-left",
   },
   {
-    key: "show",
-    label: "Show",
-    class: 'w-[8rem] text-center'
+    key: "role",
+    label: "Assign Roles",
+    class: "w-[5rem] text-center",
   },
   {
     key: "actions",
     label: "Actions",
-    class: 'w-[8rem] text-center'
+    class: "w-[8rem] text-center",
   },
   {
     key: "delete",
     label: "Delete",
-    class: 'w-[8rem] text-center'
-  }
+    class: "w-[5rem] text-center",
+  },
 ];
 const RoleTable = ({ roles }: { roles: RoleType[] }) => {
-
   return (
     <>
-      <Table
-        classNames={{
-          thead: 'bg-gray-100 font-semibold text-black',
-        }}>
-        <Table.Thead>
-          <Table.Tr className='flex'>
-            {
-              columns.map((column) => (
-                <Table.Td key={column.key} className={column.class} classNames={{
-                  td: `bg-emerald-100 ${column.class}`,
-
-                }}>
-                  {column.label}
-                </Table.Td>
-              ))
-            }
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {
-            roles && roles.length > 0 && roles.map((item) => (
-              <RoleTableRow item={item} key={item.code} />
-            ))
-          }
-        </Table.Tbody>
-      </Table >
+      <Table aria-label="Role list" className="p-2">
+        <TableHeader>
+          {columns.map((column) => (
+            <TableColumn key={column.key} className={column.class}>
+              {column.label}
+            </TableColumn>
+          ))}
+        </TableHeader>
+        <TableBody emptyContent="No data">
+          {roles && roles.length > 0 ? roles.map((item) => RoleTableRow({ item })) : []}
+        </TableBody>
+      </Table>
       {/* <Pagination
         total={10}
         initialPage={1} /> */}
     </>
-  )
-}
+  );
+};
 
-export default RoleTable
+export default RoleTable;

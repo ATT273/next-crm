@@ -4,6 +4,7 @@ import { getSession } from "@/app/actions";
 // import { getLocalUser } from "@/utils/session";
 import { revalidatePath } from "next/cache";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "${API_URL}";
+
 export const createRole = async (data: any) => {
   const user = await getSession();
   try {
@@ -16,18 +17,12 @@ export const createRole = async (data: any) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
-    if (jsonRes.status === 400) {
-      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }));
-    }
     if (jsonRes.status === 200) {
-      return jsonRes;
+      revalidatePath("/role", "page");
     }
+    return { status: res.status, message: jsonRes.message, data: null };
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("An unknown error occurred");
-    }
+    return { status: 500, message: "Internal Server Error", data: null };
   }
 };
 
@@ -77,14 +72,12 @@ export const updateRole = async (data: any) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
-    revalidatePath("/role");
-    return jsonRes;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("An unknown error occurred");
+    if (jsonRes.status === 200) {
+      revalidatePath("/role", "page");
     }
+    return { status: res.status, message: jsonRes.message, data: null };
+  } catch (error) {
+    return { status: 500, message: "Internal Server Error", data: null };
   }
 };
 
@@ -99,13 +92,11 @@ export const deleteRole = async (id: string) => {
       },
     });
     const jsonRes = await res.json();
-    revalidatePath("/role");
-    return jsonRes;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error("An unknown error occurred");
+    if (jsonRes.status === 200) {
+      revalidatePath("/role", "page");
     }
+    return { status: res.status, message: jsonRes.message, data: null };
+  } catch (error) {
+    return { status: 500, message: "Internal Server Error", data: null };
   }
 };

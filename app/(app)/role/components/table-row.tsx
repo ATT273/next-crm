@@ -1,217 +1,186 @@
-import React, { useEffect, useState } from 'react'
-import ChevronDown from '@/components/icons/chevron-down';
-import { UnstyledButton, Button, Table, Checkbox, Switch, TextInput } from '@mantine/core';
-import { MENU, permissionsValue } from '@/constants';
-import EditIcon from '@/components/icons/edit';
-import { RoleType } from '@/types/role.type';
-import { z } from 'zod';
-import Check from '@/components/icons/check';
-import XMark from '@/components/icons/xmark';
-import { updateRole } from '../actions';
-import { notifications } from '@mantine/notifications';
-import Trash from '@/components/icons/trash';
+import React, { useEffect, useState } from "react";
+import { TableRow, TableCell } from "@heroui/table";
+import { RoleType } from "@/types/role.type";
+import { z } from "zod";
+import { updateRole } from "../actions";
+import useToast from "../../_hooks/use-toast";
+import { Input } from "@heroui/input";
+import { Button, Switch } from "@heroui/react";
+import Check from "@/components/icons/check";
+import XMark from "@/components/icons/xmark";
+import Trash from "@/components/icons/trash";
+import EditIcon from "@/components/icons/edit";
+import { ShieldUser } from "lucide-react";
+import AssignRoleDialog from "./assign-role-dialog";
+
 const user = {
-  name: 'John Doe',
-  role: 'ADM'
-}
+  name: "John Doe",
+  role: "ADM",
+};
+
 const formInfoSchema = z.object({
   name: z.string().min(6, {
     message: "Name must be at least 6 characters",
   }),
   description: z.string().optional(),
   permissions: z.object({}).optional(),
-})
+});
 
 const initialValues: RoleType = {
-  name: '',
-  description: '',
-  code: '',
+  name: "",
+  description: "",
+  code: "",
   active: true,
-  permissions: { dashboard: 0 }
-}
+  permissions: { dashboard: 0 },
+};
+
+const ACTION_BUTTON_STYLE = "bg-transparent text-emerald-600 hover:bg-emerald-500 hover:text-white";
+const DELETE_BUTTON_STYLE = "bg-transparent text-red-600 hover:bg-red-500 hover:text-white";
 
 const RoleTableRow = ({ item }: { item: any }) => {
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [showMore, setShowMore] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [selectedRole, setSelectedRole] = useState(initialValues)
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(initialValues);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (user.role === 'ADM') {
-      setIsAdmin(true)
+    if (user.role === "ADM") {
+      setIsAdmin(true);
     }
-  }, [])
+  }, []);
+
   const handleSubmit = async () => {
-    const validation = formInfoSchema.safeParse(selectedRole)
+    const validation = formInfoSchema.safeParse(selectedRole);
     if (!validation.success) {
-      const error = JSON.parse(validation.error.message)[0]
-      notifications.show({
-        title: 'Fail',
+      const error = JSON.parse(validation.error.message)[0];
+      toast.error({
+        title: "Fail",
         message: error.message,
-        color: 'red',
-        position: 'top-right',
-      })
-      return
+      });
+      return;
     }
+
     const data = {
       ...selectedRole,
       permissions: JSON.stringify(selectedRole.permissions),
-      id: item.id
-    }
-    const res = await updateRole(data)
-    notifications.show({
-      title: res.status === 200 ? 'Success' : "Failed",
-      message: res.status === 200 ? 'Role updated successfully' : res.message,
-      color: res.status === 200 ? 'green' : 'red',
-      position: 'top-right',
-    })
-  }
-  const handleAssignPermission = (menu: string, value: number, isChecked: boolean) => {
-    const permissions = selectedRole.permissions
-    if (isChecked) {
-      permissions[menu] |= value
+      id: item.id,
+    };
+
+    const res = await updateRole(data);
+    if (res.status === 200) {
+      toast.success({
+        title: "Success",
+        message: "Role updated successfully",
+      });
     } else {
-      permissions[menu] &= (~value)
+      toast.error({
+        title: "Error",
+        message: "Role updated failed",
+      });
     }
-    setSelectedRole({ ...selectedRole, permissions })
-  }
+  };
+
   return (
     <>
-      <Table.Tr>
-        <Table.Td colSpan={5}>
-          <Table
-            classNames={{
-              thead: 'bg-gray-100 font-semibold text-black',
-            }}>
-            <Table.Tbody>
-              <Table.Tr className='flex'>
-                <Table.Td className='w-[12rem] text-center'>
-                  {!isEditing
-                    ? item.name
-                    : <TextInput
-                      withAsterisk
-                      type='text'
-                      placeholder="Enter role name"
-                      classNames={{ root: 'w-full' }}
-                      value={selectedRole.name}
-                      onChange={(e) => setSelectedRole({ ...selectedRole, name: e.target.value })}
-                    />
-                  }
-                </Table.Td>
-                <Table.Td className='w-[10rem] text-center'>{item.code}</Table.Td>
-                <Table.Td className='w-[10rem] text-center'>
-                  <Switch
-                    color='teal'
-                    checked={item.active}
-                    disabled={!isEditing}
-                  />
-                </Table.Td>
-                <Table.Td className='grow text-center'>
-                  {!isEditing
-                    ? item.description
-                    : <TextInput
-                      withAsterisk
-                      type='text'
-                      placeholder="Enter role description"
-                      classNames={{ root: 'w-full' }}
-                      value={selectedRole.description}
-                      onChange={(e) => {
-                        setSelectedRole({ ...selectedRole, description: e.target.value })
-                      }}
-                    />
-                  }
-                </Table.Td>
-                <Table.Td className='w-[8rem] text-center'>
-                  <Button
-                    variant='transparent'
-                    onClick={() => setShowMore(!showMore)}>
-                    <ChevronDown className='size-6 text-teal-600' />
-                  </Button>
-                </Table.Td>
-                <Table.Td className='w-[8rem] text-center'>
-                  {
-                    !isEditing
-                      ? <UnstyledButton
-                        variant='transparent'
-                        onClick={() => {
-                          setSelectedRole(item)
-                          setIsEditing(!isEditing)
-                        }}
-                        disabled={!isAdmin && item.code === 'ADM'}>
-                        <EditIcon className={`size-6 ${(!isAdmin && item.code === 'ADM') ? 'text-gray-300 cursor-default' : 'text-teal-600'}`} />
-                      </UnstyledButton>
-                      : <div className='flex gap-2 justify-center items-center'>
-                        <UnstyledButton
-                          variant='transparent'
-                          onClick={() => {
-                            handleSubmit()
-                            setIsEditing(!isEditing)
-                          }}>
-                          <Check className='size-6 text-teal-600' />
-                        </UnstyledButton>
-                        <UnstyledButton
-                          variant='transparent'
-                          onClick={() => {
-                            setSelectedRole(initialValues)
-                            setIsEditing(!isEditing)
-                          }}>
-                          <XMark className='size-6 text-teal-600' />
-                        </UnstyledButton>
-                      </div>
-                  }
-                </Table.Td>
-                <Table.Td className='w-[8rem] text-center'>
-                  <Button
-                    variant='transparent'
-                    onClick={() => setShowMore(!showMore)}>
-                    <Trash className='size-6 text-red-600' />
-                  </Button>
-                </Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                {showMore &&
-                  <Table.Td colSpan={7} className='bg-gray-100'>
-                    <div className='max-h-[300px] flex flex-col gap-2'>
-                      {
-                        MENU.map((menu) => {
-                          const permissions = item.permissions[menu.key]
-                          return (
-                            <div className='flex gap-2' key={menu.key}>
-                              <h3 className='font-semibold text-md min-w-[6rem]'>{menu.title}</h3>
-                              <div className='flex gap-2 px-3'>
-                                {/* {formInfo.getValues().permissions[menu.key]} */}
-                                {
-                                  menu.permissions.map((permission) => {
-                                    const _permission = permissionsValue[permission as keyof typeof permissionsValue]
-                                    return (
-                                      <div key={permission}>
-                                        <Checkbox
-                                          color='teal'
-                                          checked={!!(permissions & _permission)}
-                                          disabled={!isEditing}
-                                          onChange={(e) => handleAssignPermission(menu.key, _permission, e.target.checked)}
-                                          label={permission}
-                                        />
-
-                                      </div>
-                                    )
-                                  })
-                                }
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
-                  </Table.Td>
-                }
-              </Table.Tr>
-            </Table.Tbody>
-          </Table>
-        </Table.Td>
-      </Table.Tr>
+      <TableRow key={item.id}>
+        <TableCell className="w-[12rem] text-left ">
+          {!isEditing ? (
+            item.name
+          ) : (
+            <Input
+              isRequired
+              type="text"
+              placeholder="Enter role name"
+              className="w-full"
+              value={selectedRole.name}
+              onChange={(e) => setSelectedRole({ ...selectedRole, name: e.target.value })}
+            />
+          )}
+        </TableCell>
+        <TableCell className="w-[10rem] text-left ">{item.code}</TableCell>
+        <TableCell className="w-[10rem] text-left ">
+          {!isEditing ? (
+            <Switch isSelected={item.active} isDisabled={true} />
+          ) : (
+            <Switch
+              isSelected={selectedRole.active}
+              onValueChange={(value) => {
+                setSelectedRole({ ...selectedRole, active: value });
+              }}
+            />
+          )}
+        </TableCell>
+        <TableCell className="grow text-left">
+          {!isEditing ? (
+            item.description
+          ) : (
+            <Input
+              isRequired
+              type="text"
+              placeholder="Enter role description"
+              className="w-full"
+              value={selectedRole.description}
+              onChange={(e) => {
+                setSelectedRole({ ...selectedRole, description: e.target.value });
+              }}
+            />
+          )}
+        </TableCell>
+        <TableCell className="w-[5rem] text-center">
+          <Button isIconOnly onPress={() => setShowMore(!showMore)} className={ACTION_BUTTON_STYLE}>
+            <ShieldUser className="size-6" />
+          </Button>
+          <div> {AssignRoleDialog({ item: item, open: showMore, onOpenChange: setShowMore })}</div>
+        </TableCell>
+        <TableCell className="w-[8rem] text-center">
+          {!isEditing ? (
+            <Button
+              isIconOnly
+              onPress={() => {
+                setSelectedRole({ ...item });
+                setIsEditing(!isEditing);
+              }}
+              className={`
+                ${ACTION_BUTTON_STYLE}
+                ${!isAdmin && item.code === "ADM" ? "text-gray-300 cursor-default" : ""}`}
+              disabled={!isAdmin && item.code === "ADM"}
+            >
+              <EditIcon className={`size-6 `} />
+            </Button>
+          ) : (
+            <div className="flex gap-2 justify-center items-center">
+              <Button
+                isIconOnly
+                onPress={() => {
+                  handleSubmit();
+                  setIsEditing(!isEditing);
+                }}
+                className={ACTION_BUTTON_STYLE}
+              >
+                <Check className="size-6" />
+              </Button>
+              <Button
+                isIconOnly
+                onPress={() => {
+                  setSelectedRole(initialValues);
+                  setIsEditing(!isEditing);
+                }}
+                className={ACTION_BUTTON_STYLE}
+              >
+                <XMark className="size-6" />
+              </Button>
+            </div>
+          )}
+        </TableCell>
+        <TableCell className="w-[5rem] text-center">
+          <Button isIconOnly onPress={() => setShowMore(!showMore)} className={DELETE_BUTTON_STYLE}>
+            <Trash className="size-6" />
+          </Button>
+        </TableCell>
+      </TableRow>
     </>
-  )
-}
+  );
+};
 
-export default RoleTableRow
+export default RoleTableRow;
