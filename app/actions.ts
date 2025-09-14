@@ -1,16 +1,16 @@
-'use server'
-import { cookies } from 'next/headers'
+"use server";
+import { cookies } from "next/headers";
 
 export const getSession = () => {
-  const cookie = cookies()
+  const cookie = cookies();
   if (cookie) {
-    const session = cookie.get('session')
+    const session = cookie.get("session");
     if (session) {
-      if (!session.value) return null
-      return JSON.parse(session.value)
+      if (!session.value) return null;
+      return JSON.parse(session.value);
     }
-    return null
+    return null;
   } else {
-    return null
+    return null;
   }
-}
+};

@@ -1,29 +1,27 @@
-import React from 'react'
-import UserTable from './components/table'
-import NewUser from './components/new-user-drawer'
-import { getSession } from '@/app/actions'
-import { redirect } from 'next/navigation'
-import Forbidden from '@/components/pages/forbiden'
-import { permissionsValue } from '@/constants'
+import React from "react";
+import { getSession } from "@/app/actions";
+import { redirect } from "next/navigation";
+import Forbidden from "@/components/pages/forbiden";
+import { permissionsValue } from "@/constants";
+import PageContent from "./_components/page-content";
+import { getUsers } from "./actions";
 
 const User = async () => {
-  const session = await getSession()
+  const session = await getSession();
   if (!session) {
-    redirect('/authenticate')
+    redirect("/authenticate");
   } else {
     if (!(session.permissions & permissionsValue.ACCESS)) {
-      return (
-        <Forbidden />
-      )
+      return <Forbidden />;
     }
   }
-  return (
-    <div className='h-dvh p-3 flex-1'>
-      <h1 className='font-bold text-2xl mb-3'>Users</h1>
-      <UserTable />
-      <NewUser />
-    </div>
-  )
-}
+  const userData = await getUsers();
 
-export default User
+  return (
+    <div className="h-dvh p-3 flex-1">
+      {userData.data ? <PageContent users={userData.data} /> : <div>No user data available</div>}
+    </div>
+  );
+};
+
+export default User;
