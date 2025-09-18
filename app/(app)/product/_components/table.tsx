@@ -7,25 +7,12 @@ import ThreeDots from "@/components/icons/three-dot";
 import { mainCategory, subCategory } from "@/constants";
 import { deleteProduct, getProductDetails } from "../actions";
 import { formatCurrency } from "@/utils/common.util";
-import useToast from "../../_hooks/use-toast";
+import useToast from "@/app/(app)/_hooks/use-toast";
 import { useProductStore } from "../_store/product-store";
 import EditProduct from "./drawer/product-detail-drawer";
 import { Button } from "@heroui/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-} from "@heroui/table";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@heroui/modal";
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 
 const columns = [
@@ -81,8 +68,7 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
   const [deletedProduct, setDeletedProduct] = useState<string>("");
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { toast } = useToast();
-  const { setSelectedId, setProductDetails, selectedProductId } =
-    useProductStore();
+  const { setSelectedId, setProductDetails, selectedProductId } = useProductStore();
 
   const getDetails = async () => {
     const result = await getProductDetails(selectedProductId);
@@ -98,7 +84,7 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
         message: "Product deleted successfully",
       });
     } else {
-      toast.success({
+      toast.error({
         title: "Fail",
         message: `Failed to delete product: ${result.message}`,
       });
@@ -130,20 +116,8 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
                 </TableCell>
                 <TableCell>{formatCurrency(item.price)}</TableCell>
                 <TableCell>{item.qty}</TableCell>
-                <TableCell>
-                  {
-                    mainCategory.find(
-                      (c) => c.value === item.mainCategory.toString()
-                    )?.label
-                  }
-                </TableCell>
-                <TableCell>
-                  {
-                    subCategory.find(
-                      (sc) => sc.value === item.subCategory.toString()
-                    )?.label
-                  }
-                </TableCell>
+                <TableCell>{mainCategory.find((c) => c.value === item.mainCategory.toString())?.label}</TableCell>
+                <TableCell>{subCategory.find((sc) => sc.value === item.subCategory.toString())?.label}</TableCell>
                 <TableCell>{item.unit}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell>
@@ -164,9 +138,7 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
                                 setOpen(true);
                                 setSelectedId(item._id);
                               }}
-                              startContent={
-                                <EditIcon className="text-teal-500 size-4" />
-                              }
+                              startContent={<EditIcon className="text-teal-500 size-4" />}
                             >
                               <p className="text-slate-900 ml-2">Edit</p>
                             </Button>
@@ -179,9 +151,7 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
                                 setOpenDeleteConfirm(true);
                                 setDeletedProduct(item._id);
                               }}
-                              startContent={
-                                <Trash className="text-red-500 size-4" />
-                              }
+                              startContent={<Trash className="text-red-500 size-4" />}
                             >
                               <p className="text-slate-900 ml-2">Delete</p>
                             </Button>
@@ -207,13 +177,9 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                "Confirm delete"
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">"Confirm delete"</ModalHeader>
               <ModalBody>
-                <p className="text-slate-900 mb-2">
-                  Are you sure you want to delete this product?
-                </p>
+                <p className="text-slate-900 mb-2">Are you sure you want to delete this product?</p>
               </ModalBody>
               <ModalFooter>
                 <div className="flex gap-2 w-full justify-end">

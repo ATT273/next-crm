@@ -1,4 +1,5 @@
 export type RoleType = {
+  id?: number;
   name: string;
   description: string;
   code: string;
@@ -6,4 +7,4 @@ export type RoleType = {
   permissions: {
     [key: string]: number;
   };
-}
+};
