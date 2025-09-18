@@ -207,6 +207,9 @@ export const updateProductSku = async (id: string, data: IProductSku[]) => {
       body: JSON.stringify(data),
     });
     const jsonRes = await res.json();
+    // if (jsonRes.status === 400) {
+    //   throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
+    // }
     if (jsonRes.status === 200) {
       revalidatePath("/(app)/product", "page");
     }
@@ -217,5 +220,22 @@ export const updateProductSku = async (id: string, data: IProductSku[]) => {
     } else {
       throw new Error("An unknown error occurred");
     }
+  }
+};
+
+export const getPresignedUrl = async (files: File[]) => {
+  try {
+    const res = await fetch("/api/url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        files: files.map((f) => ({ name: f.name })),
+      }),
+    });
+    // console.log("res presigned", res);
+    return await res.json();
+  } catch (error) {
+    console.log("error presigned", error);
+    return null;
   }
 };

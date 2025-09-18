@@ -27,14 +27,8 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
 
   const [openSkuDialog, setOpenSkuDialog] = useState<boolean>(false);
 
-  const mainCode = useMemo(
-    () => mainCategory.find((item) => item.value === _mainCategoryId)?.code,
-    [_mainCategoryId]
-  );
-  const subCode = useMemo(
-    () => subCategory.find((item) => item.value === _subCategoryId)?.code,
-    [_subCategoryId]
-  );
+  const mainCode = useMemo(() => mainCategory.find((item) => item.value === _mainCategoryId)?.code, [_mainCategoryId]);
+  const subCode = useMemo(() => subCategory.find((item) => item.value === _subCategoryId)?.code, [_subCategoryId]);
   const enableNewVariant = useMemo(() => {
     return !!_mainCategoryId && !!_subCategoryId;
   }, [_mainCategoryId, _subCategoryId]);
@@ -54,9 +48,7 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
   }, [productDetails]);
 
   const handleSkuChanges = (type: string, value: string, index: number) => {
-    const _skuItems = skuItems.map((item, i) =>
-      i === index ? { ...item, [type]: Number(value) } : item
-    );
+    const _skuItems = skuItems.map((item, i) => (i === index ? { ...item, [type]: Number(value) } : item));
     setSKUItems(_skuItems);
   };
 
@@ -88,7 +80,7 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
     }
   };
   return (
-    <div className="w-full p-2 rounded-md shadow-sm p-2">
+    <div className="w-full p-2 rounded-md shadow-sm">
       <div className="mb-2">
         <h3 className="text-lg font-semibold">Attribute</h3>
       </div>
@@ -144,7 +136,7 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
             );
           })}
         </div>
-        <fieldset className="w-full flex justify-end py-2 border border-2 border-gray-300 rounded-md">
+        <fieldset className="w-full flex justify-end py-2 border-2 border-gray-300 rounded-md">
           <legend className="flex gap-2 items-center px-2 ml-2">
             Add variant
             <Button
@@ -175,11 +167,7 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
                       value={formatCurrency(item.price)}
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, "");
-                        handleSkuChanges(
-                          "price",
-                          isNaN(Number(value)) ? "0" : value,
-                          index
-                        );
+                        handleSkuChanges("price", isNaN(Number(value)) ? "0" : value, index);
                       }}
                     />
                     <Input
@@ -192,11 +180,7 @@ const AttributeSection = ({ updateSkuItems }: Props) => {
                       value={formatCurrency(item.qty)}
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, "");
-                        handleSkuChanges(
-                          "qty",
-                          isNaN(Number(value)) ? "0" : value,
-                          index
-                        );
+                        handleSkuChanges("qty", isNaN(Number(value)) ? "0" : value, index);
                       }}
                     />
                     <Button
