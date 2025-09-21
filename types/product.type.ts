@@ -10,6 +10,7 @@ export type ProductType = {
   sizes: string[];
   importPrice: number;
   skus: IProductSku[];
+  images: IProductImage[];
 };
 
 export type CreateProductType = {
@@ -31,6 +32,19 @@ export interface IProductSku {
   price: number;
 }
 
+export interface IProductImage {
+  url: string;
+  id?: string;
+  name: string;
+}
+
+export type ClientImage = {
+  id?: number;
+  file?: File;
+  url: string;
+  name: string;
+};
+
 export interface IProductForm {
   name: string;
   mainCategory: string;
@@ -42,4 +56,8 @@ export interface IProductForm {
   sizes?: string[];
   tags?: string[];
   description?: string;
+}
+
+export interface IProductPayload extends IProductForm {
+  files: IProductImage[];
 }

@@ -1,21 +1,12 @@
 "use server";
 import { IProductForm, IProductSku } from "@/types/product.type";
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/app/actions";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "${API_URL}";
-export const getServerSession = async () => {
-  const cookieStore = cookies();
-  const session = await cookieStore.get("session");
-  if (!session) return null;
-  return session;
-};
 
 export const getProducts = async () => {
-  // const session = await getServerSession();
   const user = await getSession();
-  // const user = JSON.parse(session!.value);
   try {
     const res = await fetch(`${API_URL}/products`, {
       method: "GET",
@@ -49,8 +40,7 @@ export const getProducts = async () => {
 };
 
 export const getProductDetails = async (id: string) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/products/${id}`, {
       method: "GET",
@@ -83,8 +73,7 @@ export const getProductDetails = async (id: string) => {
 };
 
 export const createProduct = async (data: IProductForm) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
 
   try {
     const res = await fetch(`${API_URL}/products`, {
@@ -113,8 +102,7 @@ export const createProduct = async (data: IProductForm) => {
 };
 
 export const updateProduct = async (id: string, data: IProductForm) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/products/${id}`, {
       method: "PUT",
@@ -139,8 +127,7 @@ export const updateProduct = async (id: string, data: IProductForm) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
   try {
     const res = await fetch(`${API_URL}/products/${id}`, {
       method: "DELETE",
@@ -164,8 +151,7 @@ export const deleteProduct = async (id: string) => {
 };
 
 export const createProductSku = async (id: string, data: IProductSku[]) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
 
   try {
     const res = await fetch(`${API_URL}/products/${id}/product-sku`, {
@@ -194,8 +180,7 @@ export const createProductSku = async (id: string, data: IProductSku[]) => {
 };
 
 export const updateProductSku = async (id: string, data: IProductSku[]) => {
-  const session = await getServerSession();
-  const user = JSON.parse(session!.value);
+  const user = await getSession();
 
   try {
     const res = await fetch(`${API_URL}/products/${id}/product-sku`, {
@@ -232,7 +217,6 @@ export const getPresignedUrl = async (files: File[]) => {
         files: files.map((f) => ({ name: f.name })),
       }),
     });
-    // console.log("res presigned", res);
     return await res.json();
   } catch (error) {
     console.log("error presigned", error);

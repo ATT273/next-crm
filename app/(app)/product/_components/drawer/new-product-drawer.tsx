@@ -5,9 +5,10 @@ import { SubmitHandler } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { permissionsValue } from "@/constants";
 import { createProduct, createProductSku } from "../../actions";
-import { IProductForm, IProductSku } from "@/types/product.type";
+import { ClientImage, IProductForm, IProductPayload, IProductSku } from "@/types/product.type";
 import useToast from "../../../_hooks/use-toast";
-import ProductForm, { ClientImage } from "./product-form";
+import ProductForm from "./product-form";
+import { useUploadFiles } from "../../_hooks/use-upload-file";
 
 const NewProduct = () => {
   const [open, setOpen] = useState(false);
@@ -17,40 +18,30 @@ const NewProduct = () => {
     delete: false,
   });
   const { toast } = useToast();
-  // const [skuItems, setSKUItems] = useState<IProductSku[]>([]);
-  // const [files, setFiles] = useState<ClientImage[]>([]);
+  const { uploading, uploadFiles } = useUploadFiles();
 
-  const handleSubmit: SubmitHandler<
-    IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }
-  > = async (
+  const handleSubmit: SubmitHandler<IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }> = async (
     values: IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }
   ) => {
     const { skuItems, files, ...data } = values;
-    const _data = {
+    const _data: IProductPayload = {
       ...data,
       mainCategory: values.mainCategory,
       subCategory: values.subCategory,
       importPrice: values.importPrice,
       description: values.description ?? "",
       sizes: values.sizes ?? [],
+      files: [],
     };
+
+    if (files.length > 0) {
+      const uploadResults = await uploadFiles(files);
+      if (uploadResults?.length) {
+        _data.files = uploadResults;
+      }
+    }
     const result = await createProduct(_data);
     if (result.status === 200) {
-      const productId = result.data._id;
-      if (skuItems.length > 0) {
-        const skuResult = await createProductSku(productId, skuItems);
-        if (skuResult.status === 200) {
-          toast.success({
-            title: "Success",
-            message: "SKU created successfully",
-          });
-        } else {
-          toast.error({
-            title: "Fail",
-            message: `Failed to create SKU: ${result.message}`,
-          });
-        }
-      }
       toast.success({
         title: "Success",
         message: "Product created successfully",

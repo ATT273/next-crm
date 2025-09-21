@@ -1,7 +1,6 @@
 "use server";
 
 import { getSession } from "@/app/actions";
-// import { getLocalUser } from "@/utils/session";
 import { revalidatePath } from "next/cache";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "${API_URL}";
 

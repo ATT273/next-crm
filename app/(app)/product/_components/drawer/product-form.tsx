@@ -3,7 +3,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { IProductForm, IProductSku } from "@/types/product.type";
+import { ClientImage, IProductForm, IProductSku } from "@/types/product.type";
 import BasicSection from "../sections/basic-section";
 import PricingSection from "../sections/pricing-section";
 import AttributeSection from "../sections/attribute-section";
@@ -11,15 +11,8 @@ import ExtraSection from "../sections/extra-section";
 import Footer from "./footer";
 import { useProductStore } from "../../_store/product-store";
 
-export type ClientImage = {
-  file: File;
-  url: string;
-};
-
 interface Props {
-  handleSubmit: (
-    values: IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }
-  ) => void;
+  handleSubmit: (values: IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }) => void;
   closeDrawer: (open: boolean) => void;
 }
 
