@@ -1,8 +1,8 @@
-import { IRole } from "@/types/role.type";
+// import { IRole } from "@/types/role.type";
 import React, { createContext, useContext } from "react";
 
 export type AppContextType = {
-  roles: IRole[];
+  roles: any[];
 };
 export const AppContext = createContext<AppContextType>({} as AppContextType);
 const AppProvider = ({

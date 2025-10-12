@@ -68,12 +68,7 @@ const InforForm = () => {
     }
   };
   const onSubmit = async (values: z.infer<typeof formInfoSchema>) => {
-    const res = await updateInfo(
-      values.email,
-      values.name,
-      values.dob,
-      localUser?.id
-    );
+    const res = await updateInfo(values.email, values.name, values.dob, localUser?.id);
     if (res.status === 200) {
       addToast({
         title: "Success",
@@ -84,13 +79,8 @@ const InforForm = () => {
   };
   return (
     <div className="mb-3">
-      <h2 className="text-gray-800 text-xl font-semibold">
-        General Information
-      </h2>
-      <Form
-        className="w-full max-w-xs flex flex-col gap-4"
-        onSubmit={formInfo.handleSubmit(onSubmit)}
-      >
+      <h2 className="text-gray-800 text-xl font-semibold">General Information</h2>
+      <Form className="w-full max-w-xs flex flex-col gap-4" onSubmit={formInfo.handleSubmit(onSubmit)}>
         <Controller
           name="email"
           control={formInfo.control}
@@ -129,17 +119,13 @@ const InforForm = () => {
             <DatePicker
               className="w-full"
               label="Date of Birth"
-              value={value}
-              onChange={setValue}
+              // value={value}
+              // onChange={setValue}
             />
           )}
         />
         <div className="flex justify-end w-full">
-          <Button
-            type="submit"
-            variant="light"
-            className="w-full bg-gray-900 text-white"
-          >
+          <Button type="submit" variant="light" className="w-full bg-gray-900 text-white">
             Save
           </Button>
         </div>

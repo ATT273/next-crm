@@ -1,6 +1,5 @@
-import Link from "next/link";
+import { Link, Button } from "@heroui/react";
 import { getSession } from "@/app/actions";
-import { Button } from "@heroui/button";
 
 export default async function Home() {
   const session = await getSession();
@@ -8,17 +7,15 @@ export default async function Home() {
   return (
     <div className="w-dvw h-dvh items-center relative">
       <div className="absolute top-1/2 -translate-y-1/2 w-full">
-        <h1 className="font-bold text-3xl text-center mb-3">
-          Welcome to Next CRM, {session ? session.name : "Guest"}
-        </h1>
+        <h1 className="font-bold text-3xl text-center mb-3">Welcome to Next CRM, {session ? session.name : "Guest"}</h1>
         <div className="w-full flex justify-center">
           {session && session.id ? (
-            <Button color="primary">
-              <Link href="/dashboard">Go to Dashboard</Link>
+            <Button as={Link} color="primary" href="dashboard" variant="solid">
+              Go to dashboard
             </Button>
           ) : (
-            <Button>
-              <Link href="/authenticate">Login</Link>
+            <Button as={Link} color="primary" href="authenticate" variant="solid">
+              Login
             </Button>
           )}
         </div>

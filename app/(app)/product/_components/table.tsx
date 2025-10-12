@@ -14,6 +14,7 @@ import { Button } from "@heroui/button";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import NewSkuDialog from "./modals/new-sku-dialog";
 
 const columns = [
   {
@@ -45,6 +46,10 @@ const columns = [
     label: "Description",
   },
   {
+    key: "sku",
+    label: "",
+  },
+  {
     key: "edit",
     label: "Action",
   },
@@ -67,6 +72,8 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
   const [open, setOpen] = useState(false);
   const [deletedProduct, setDeletedProduct] = useState<string>("");
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const [isSkuDialogOpen, setIsSkuDialogOpen] = useState<boolean>(false);
+
   const { toast } = useToast();
   const { setSelectedId, setProductDetails, selectedProductId } = useProductStore();
 
@@ -89,6 +96,11 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
         message: `Failed to delete product: ${result.message}`,
       });
     }
+  };
+
+  const openSkuDialog = (itemId: string) => {
+    setIsSkuDialogOpen(true);
+    setSelectedId(itemId);
   };
 
   useEffect(() => {
@@ -120,6 +132,18 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
                 <TableCell>{subCategory.find((sc) => sc.value === item.subCategory.toString())?.label}</TableCell>
                 <TableCell>{item.unit}</TableCell>
                 <TableCell>{item.description}</TableCell>
+                <TableCell>
+                  <Button
+                    onPress={() => {
+                      setSelectedId(item._id);
+                      openSkuDialog(item._id);
+                    }}
+                    className="size-8"
+                    variant="ghost"
+                  >
+                    Skus
+                  </Button>
+                </TableCell>
                 <TableCell>
                   {!open && (
                     <Popover key={"context-menu"} placement="bottom">
@@ -173,6 +197,7 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
         </TableBody>
       </Table>
       <EditProduct open={open} setOpen={setOpen} />
+      <NewSkuDialog open={isSkuDialogOpen} setOpen={setIsSkuDialogOpen} />
       <Modal isOpen={openDeleteConfirm} onOpenChange={setOpenDeleteConfirm}>
         <ModalContent>
           {(onClose) => (

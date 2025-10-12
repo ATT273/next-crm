@@ -1,10 +1,10 @@
 "use server";
 import { cookies } from "next/headers";
 
-export const getSession = () => {
-  const cookie = cookies();
-  if (cookie) {
-    const session = cookie.get("session");
+export const getSession = async () => {
+  const cookieStore = await cookies();
+  if (cookieStore) {
+    const session = cookieStore.get("session");
     if (session) {
       if (!session.value) return null;
       return JSON.parse(session.value);

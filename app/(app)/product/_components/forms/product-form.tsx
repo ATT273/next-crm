@@ -3,23 +3,16 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { IProductForm, IProductSku } from "@/types/product.type";
+import { ClientImage, IProductForm, IProductSku } from "@/types/product.type";
 import BasicSection from "../sections/basic-section";
 import PricingSection from "../sections/pricing-section";
 import AttributeSection from "../sections/attribute-section";
 import ExtraSection from "../sections/extra-section";
-import Footer from "./footer";
+import Footer from "../drawer/footer";
 import { useProductStore } from "../../_store/product-store";
 
-export type ClientImage = {
-  file: File;
-  url: string;
-};
-
 interface Props {
-  handleSubmit: (
-    values: IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }
-  ) => void;
+  handleSubmit: (values: IProductForm & { skuItems: IProductSku[]; files: ClientImage[] }) => void;
   closeDrawer: (open: boolean) => void;
 }
 
@@ -43,7 +36,7 @@ const ProductForm = ({ handleSubmit, closeDrawer }: Props) => {
     }),
     price: z.number().min(1, { message: "Price is required" }),
     importPrice: z.number().min(1, { message: "Import price is required" }),
-    qty: z.number().min(1, { message: "Quantity is required" }),
+    // qty: z.number().min(1, { message: "Quantity is required" }),
     sizes: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     description: z.string().optional(),
@@ -58,7 +51,7 @@ const ProductForm = ({ handleSubmit, closeDrawer }: Props) => {
       unit: "",
       price: 0,
       importPrice: 0,
-      qty: 0,
+      // qty: 0,
       sizes: [],
       description: "",
     },
@@ -90,7 +83,7 @@ const ProductForm = ({ handleSubmit, closeDrawer }: Props) => {
         unit: productDetails.unit,
         price: productDetails.price,
         importPrice: productDetails.importPrice,
-        qty: productDetails.qty,
+        // qty: productDetails.qty,
         sizes: productDetails.sizes,
         description: productDetails.description,
       });
@@ -109,7 +102,6 @@ const ProductForm = ({ handleSubmit, closeDrawer }: Props) => {
         <AttributeSection updateSkuItems={setSKUItems} />
         <ExtraSection updateImages={setFiles} />
       </form>
-      <div className=""></div>
       <Footer closeDrawer={closeDrawer} handleSubmit={onSubmit} />
     </FormProvider>
   );
