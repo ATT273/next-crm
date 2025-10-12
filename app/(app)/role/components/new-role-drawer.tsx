@@ -66,6 +66,12 @@ const NewRole = () => {
     formInfo.setValue("permissions", permissions);
   };
 
+  const onOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      formInfo.reset();
+    }
+    setOpened(isOpen);
+  };
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     if (localUser) {
@@ -81,7 +87,7 @@ const NewRole = () => {
 
   return (
     <div>
-      <Drawer isOpen={opened} onOpenChange={setOpened} size="xl" className="">
+      <Drawer isOpen={opened} onOpenChange={onOpenChange} size="xl" className="">
         <DrawerContent>
           <DrawerHeader className="flex flex-col gap-1">Add new role</DrawerHeader>
           <form

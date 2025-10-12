@@ -27,18 +27,3 @@ export function HeroProviders({ children, themeProps }: ProvidersProps) {
     </HeroUIProvider>
   );
 }
-
-// "use client";
-// import { HeroUIProvider, ToastProvider } from "@heroui/react";
-// import AppProvider from "./(app)/_components/app-provider";
-
-// export default function HeroProviders({ children }: { children: React.ReactNode }) {
-//   return (
-//     <HeroUIProvider>
-//       <AppProvider>
-//         <ToastProvider placement="top-center" />
-//         {children}
-//       </AppProvider>
-//     </HeroUIProvider>
-//   );
-// }

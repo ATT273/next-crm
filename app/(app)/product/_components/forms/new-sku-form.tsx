@@ -16,10 +16,12 @@ interface Props {
 }
 
 const initialValue = {
+  id: "",
   sku: "",
   size: "",
   qty: 0,
   price: 0,
+  images: [],
 };
 
 const NewSkuForm = ({ open, setOpen, handleSubmit }: Props) => {
@@ -57,7 +59,8 @@ const NewSkuForm = ({ open, setOpen, handleSubmit }: Props) => {
   const handleAddSku = (data: IProductSku) => {
     setIsValid(validateForm(data, true));
     if (isValid.size && isValid.qty && isValid.price) {
-      handleSubmit(data);
+      const _data = { ...data, id: crypto.randomUUID(), images: [] };
+      handleSubmit(_data);
       setNewSku(initialValue);
     }
   };

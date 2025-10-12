@@ -14,7 +14,7 @@ export default async function Home() {
               Go to dashboard
             </Button>
           ) : (
-            <Button as={Link} color="primary" href="login" variant="solid">
+            <Button as={Link} color="primary" href="authenticate" variant="solid">
               Login
             </Button>
           )}

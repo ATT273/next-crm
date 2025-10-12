@@ -26,12 +26,13 @@ export type CreateProductType = {
 };
 
 export interface IProductSku {
+  id: string;
   sku: string;
   size: string;
   qty: number;
   price: number;
+  images: IProductImage[];
 }
-
 export interface IProductImage {
   url: string;
   id?: string;
@@ -52,12 +53,12 @@ export interface IProductForm {
   unit: string;
   price: number;
   importPrice: number;
-  qty: number;
+  // qty: number;
   sizes?: string[];
   tags?: string[];
   description?: string;
 }
 
 export interface IProductPayload extends IProductForm {
-  files: IProductImage[];
+  images: IProductImage[];
 }

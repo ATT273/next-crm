@@ -7,6 +7,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Button, Skeleton } from "@heroui/react";
 import { useProductStore } from "../../_store/product-store";
 import { ClientImage } from "@/types/product.type";
+import { X } from "lucide-react";
 
 // import { getPresignedUrl } from "../../actions";
 
@@ -40,9 +41,10 @@ const ExtraSection = ({ updateImages }: Props) => {
   useEffect(() => {
     if (productDetails && productDetails.images?.length > 0) {
       const _files = productDetails.images.map((item) => ({ url: item.url, name: item.name }));
-      setFiles((prev) => [...prev, ..._files]);
+      setFiles(_files);
     }
   }, [productDetails]);
+
   return (
     <div className="shadow-sm rounded-md w-full p-2">
       <div className="mb-2">
@@ -67,14 +69,22 @@ const ExtraSection = ({ updateImages }: Props) => {
         <div className="flex gap-2 flex-wrap p-2">
           {files.length > 0 ? (
             files.map((item, index) => (
-              <Image
+              <div
                 key={index}
-                alt={item.file?.name || "product image"}
-                src={item.url}
-                width={100}
-                height={100}
-                className="object-cover"
-              />
+                className="relative w-[100px] h-[100px]  rounded-lg overflow-hidden border border-slate-200"
+              >
+                <Image
+                  key={index}
+                  alt={item.file?.name || "product image"}
+                  src={item.url}
+                  width={300}
+                  height={300}
+                  className="object-cover w-[100px] h-[100px]"
+                />
+                <div className="absolute top-1 right-1 cursor-pointer">
+                  <X className="bg-white rounded-full" onClick={() => setFiles(files.filter((_, i) => i !== index))} />
+                </div>
+              </div>
             ))
           ) : (
             <Skeleton className="rounded-lg overflow-hidden">

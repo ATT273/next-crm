@@ -1,29 +1,49 @@
 import { useState } from "react";
 import { pinata } from "@/utils/pinata-config";
-import { getPresignedUrl } from "../actions";
+// import { getPresignedUrl } from "../actions";
 import useToast from "../../_hooks/use-toast";
 import { ClientImage } from "@/types/product.type";
+
+export const getPresignedUrl = async (files: File[]) => {
+  try {
+    const res = await fetch("api/url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        files: files.map((f) => ({ name: f.name })),
+      }),
+    });
+
+    const resJson = await res.json();
+    return resJson;
+  } catch (error) {
+    return { urls: [] };
+  }
+};
 
 export const useUploadFiles = () => {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
-  const uploadFiles = async (files: ClientImage[]) => {
+  const uploadFiles = async (files: ClientImage[]): Promise<{ name: string; url: string }[]> => {
     try {
       if (!files.length) {
-        console.log("No file selected");
-        return;
+        return [];
       }
 
       setUploading(true);
       const { urls } = await getPresignedUrl(files.map((file) => file.file!));
+      const presignedUrls = urls && urls.length > 0 ? urls : [];
+
+      if (presignedUrls.length === 0) return [];
+
       const uploadPromises = await Promise.all(
-        files.map(async (file, index) => {
-          return await uploadSingleFile(file.file!, urls[index]);
+        files.map((file, index) => {
+          return uploadSingleFile(file.file!, presignedUrls[index]);
         })
       );
-
       const imagesMapper = files.map((file, index) => ({
+        id: index + 1,
         name: file.file!.name,
         url: uploadPromises[index] ? uploadPromises[index] : "",
       }));
@@ -35,7 +55,6 @@ export const useUploadFiles = () => {
       });
       return imagesMapper;
     } catch (e) {
-      console.log("Trouble uploading file", e);
       setUploading(false);
       toast.error({
         title: "Error",

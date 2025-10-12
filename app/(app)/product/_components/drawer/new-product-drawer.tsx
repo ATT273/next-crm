@@ -7,7 +7,7 @@ import { permissionsValue } from "@/constants";
 import { createProduct, createProductSku } from "../../actions";
 import { ClientImage, IProductForm, IProductPayload, IProductSku } from "@/types/product.type";
 import useToast from "../../../_hooks/use-toast";
-import ProductForm from "./product-form";
+import ProductForm from "../forms/product-form";
 import { useUploadFiles } from "../../_hooks/use-upload-file";
 
 const NewProduct = () => {
@@ -31,13 +31,13 @@ const NewProduct = () => {
       importPrice: values.importPrice,
       description: values.description ?? "",
       sizes: values.sizes ?? [],
-      files: [],
+      images: [],
     };
 
     if (files.length > 0) {
       const uploadResults = await uploadFiles(files);
-      if (uploadResults?.length) {
-        _data.files = uploadResults;
+      if (uploadResults.length > 0) {
+        _data.images = uploadResults;
       }
     }
     const result = await createProduct(_data);
@@ -70,7 +70,7 @@ const NewProduct = () => {
 
   return (
     <div className="">
-      <Drawer isOpen={open} onOpenChange={setOpen} size="xl">
+      <Drawer isOpen={open} onOpenChange={setOpen} size="xl" isDismissable={false}>
         <DrawerContent>
           <ProductForm closeDrawer={setOpen} handleSubmit={handleSubmit} />
         </DrawerContent>

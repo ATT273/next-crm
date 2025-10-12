@@ -133,7 +133,14 @@ const ProductTable = ({ products }: { products: ProductType[] }) => {
                 <TableCell>{item.unit}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell>
-                  <Button onPress={() => openSkuDialog(item._id)} className="size-8" variant="ghost">
+                  <Button
+                    onPress={() => {
+                      setSelectedId(item._id);
+                      openSkuDialog(item._id);
+                    }}
+                    className="size-8"
+                    variant="ghost"
+                  >
                     Skus
                   </Button>
                 </TableCell>

@@ -53,23 +53,13 @@ const LogInForm = () => {
 
   return (
     <div>
-      <form
-        key="logInForm"
-        onSubmit={form.handleSubmit(onlogIn)}
-        className="flex flex-col gap-3 p-3 items-center"
-      >
+      <form key="logInForm" onSubmit={form.handleSubmit(onlogIn)} className="flex flex-col gap-3 p-3 items-center">
         <h3 className="font-bold text-2xl text-center">Log In</h3>
         <Controller
           name="email"
           control={form.control}
           render={({ field }) => (
-            <Input
-              isRequired
-              label="Email"
-              placeholder="your@email.com"
-              className="w-full"
-              {...field}
-            />
+            <Input isRequired label="Email" placeholder="your@email.com" {...field} className="w-full text-gray-900" />
           )}
         />
         <Controller
