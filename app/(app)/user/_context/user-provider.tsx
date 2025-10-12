@@ -1,10 +1,10 @@
 import { createContext, useContext, useState } from "react";
 import { IUserResponse } from "@/types/user.type";
-import { IRole } from "@/types/role.type";
+// import { IRole } from "@/types/role.type";
 
 export type UserContextType = {
   users?: IUserResponse[];
-  roles: IRole[];
+  roles: any[];
   editingUser: IUserResponse | null;
   setEditingUser: (user: IUserResponse | null) => void;
 };

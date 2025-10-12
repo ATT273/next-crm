@@ -1,74 +1,75 @@
-'use server'
-import { cookies } from 'next/headers'
+"use server";
+import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-export const signUp = async ({ email, password, name }: { email: string, password: string, name: string }) => {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+export const signUp = async ({ email, password, name }: { email: string; password: string; name: string }) => {
   try {
+    const cookie = await cookies();
     const res = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name })
-    })
-    const jsonRes = await res.json()
+      body: JSON.stringify({ email, password, name }),
+    });
+    const jsonRes = await res.json();
     if (jsonRes.status === 400) {
-      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }))
+      throw Error(JSON.stringify({ message: jsonRes.message, ok: false, status: 400, url: null }));
     }
     if (jsonRes.status === 200) {
-      const _session = JSON.stringify(jsonRes)
-      cookies().set('session', _session, {
+      const _session = JSON.stringify(jsonRes);
+      cookie.set("session", _session, {
         httpOnly: true,
         secure: true,
         maxAge: 60 * 60 * 24 * 1, // One day
-        path: '/',
-      })
-      return jsonRes
+        path: "/",
+      });
+      return jsonRes;
     }
-    return null
+    return null;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
-export const logIn = async ({ email, password }: { email: string, password: string }) => {
+};
+export const logIn = async ({ email, password }: { email: string; password: string }) => {
   try {
+    const cookie = await cookies();
     const res = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    })
-    const jsonRes = await res.json()
+      body: JSON.stringify({ email, password }),
+    });
+    const jsonRes = await res.json();
     if (jsonRes.status === 400) {
-      return ({ message: jsonRes.message, ok: false, status: 400, url: null })
+      return { message: jsonRes.message, ok: false, status: 400, url: null };
     }
     if (jsonRes.status === 200) {
-      jsonRes.permissions = 3
-      const _session = JSON.stringify(jsonRes)
-      cookies().set('session', _session, {
+      jsonRes.permissions = 3;
+      const _session = JSON.stringify(jsonRes);
+      cookie.set("session", _session, {
         httpOnly: true,
         secure: true,
         maxAge: 60 * 60 * 24 * 1, // One day
-        path: '/',
-      })
-      return jsonRes
+        path: "/",
+      });
+      return jsonRes;
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred')
+      throw new Error("An unknown error occurred");
     }
   }
-}
+};
 
-export const logOut = () => {
+export const logOut = async () => {
   try {
-    const cookie = cookies()
-    cookie.delete('session')
-
+    const cookie = await cookies();
+    cookie.delete("session");
   } catch (error) {
-    console.log('error', error)
+    console.log("error", error);
   }
-}
+};

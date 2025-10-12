@@ -1,5 +1,4 @@
 "use client";
-// import { Table } from '@mantine/core';
 import RoleTableRow from "./table-row";
 import { RoleType } from "@/types/role.type";
 import { Table, TableHeader, TableBody, TableColumn } from "@heroui/table";
